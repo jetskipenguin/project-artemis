@@ -27,40 +27,56 @@ def start_game():
         clock.tick(60)
         pygame.display.update()
 
+# returns pygame font object in correct size depending on character count
+def resizeFont(user_input, font):
+    if len(user_input) > 10:
+        return pygame.font.SysFont(font, 20)
+    else:
+        return pygame.font.SysFont(font, 32)
+
 # display question and answer choices
 def question(question: str, choices, correct_choice, weblink=None):
     pygame.init()
 
+    # set window icon
+    icon = pygame.image.load('sprites\\window_icon.png')
+    pygame.display.set_icon(icon)
+
     # Screen Resolution
     res = (720,720)
     screen = pygame.display.set_mode(res)
-
+    pygame.display.set_caption('Question')
+    
     #### Colors
     # Text Color
     color = (255, 255, 255)
     # Hover Color
-    hover_color = (108, 184, 216)
+    hover_color = (0, 0, 204)
     # Button Color
-    color_dark = (19, 149, 205)
+    color_dark = (0, 0, 153)
     # Background Color
     background_color = (0,0,0)
 
     # Fonts
-    smallfont = pygame.font.SysFont('Corbel',35)
+    font = 'Corbel'
+    smallfont = pygame.font.SysFont(font, 32)
+    # Sizes text accordingly
+    new_font = resizeFont(question, font)
 
     # Screen Widths
     width = screen.get_width()
     height = screen.get_height()
     
     # Text
-    question_text = smallfont.render(question, True, color)
+    question_text = new_font.render(question, True, color)
     texts = []
     for i in range(0, 4):
-        texts.append(smallfont.render(choices[i], True, color))
+        new_font = resizeFont(choices[i], font)
+        texts.append(new_font.render(choices[i], True, color))
 
     # Stores positions of buttons and text
     choice_coordinates = [(width/2 - 250, height/2 - 50), (width/2 + 100, height/2 - 50), (width/2 - 250, height/2 + 50), (width/2 + 100, height/2 + 50)]
-    question_coord = (width/2 - 150, height/2 - 150)
+    question_coord = (width/2 - 300, height/2 - 150)
 
     # Stores Height and Width of Answer Buttons
     button_width = 225
@@ -93,7 +109,10 @@ def question(question: str, choices, correct_choice, weblink=None):
                     
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if weblink_coords[0] <= mouse[0] <= weblink_coords[0] + weblink_width and weblink_coords[1] <= mouse[1] <= weblink_coords[1] + weblink_height:        
-                    webbrowser.open(weblink)
+                    try:
+                        webbrowser.get("C:/Program Files/Google/Chrome/Application/chrome.exe %s").open(weblink)
+                    except:
+                        webbrowser.open(weblink)
 
         # fills the screen with a color
         screen.fill(background_color)
