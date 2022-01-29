@@ -4,6 +4,7 @@ import sys
 import math
 import random
 
+
 def start_game():
 
     # Init Stuff
@@ -11,7 +12,6 @@ def start_game():
     display = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
     player = Player(400, 300, 32, 32)
-
 
     # Start game loop
     while True:
@@ -35,7 +35,6 @@ def start_game():
         if keys[pygame.K_s]:
             player.y -= 5
 
-
         clock.tick(60)
         pygame.display.update()
 
@@ -58,16 +57,12 @@ def question(question: str, choices):
     # Screen Widths
     width = screen.get_width()
     height = screen.get_height()
-
-    # rendering a text written in
-    # this font
-    quit = smallfont.render('quit' , True , color)
     
     # Text
     question_text = smallfont.render(question, True, color)
     texts = []
     for i in range(0, 4):
-        texts.append(smallfont.render(choices[0], True, color))
+        texts.append(smallfont.render(choices[i], True, color))
 
     # Stores positions of buttons and text
     choice_coordinates = [(width/2 - 250, height/2 - 50), (width/2 + 100, height/2 - 50), (width/2 - 250, height/2 + 50), (width/2 + 100, height/2 + 50)]
@@ -77,7 +72,6 @@ def question(question: str, choices):
     button_height = 75
     
     while True:
-        
         for ev in pygame.event.get():
             
             if ev.type == pygame.QUIT:
@@ -96,15 +90,17 @@ def question(question: str, choices):
         
         # Draws button for question 1, changes color when mouse hovers
         for i in range(0, 4):
+            # If mouse hovering over button
             if choice_coordinates[i][0] <= mouse[0] <= choice_coordinates[i][0] + button_width and choice_coordinates[i][1] <= mouse[1] <= choice_coordinates[i][1] + button_height:
                 pygame.draw.rect(screen,hover_color,[choice_coordinates[i][0], choice_coordinates[i][1],button_width,button_height])
             else:
+                # If mouse not hovering over button
                 pygame.draw.rect(screen,color_dark,[choice_coordinates[i][0], choice_coordinates[i][1],button_width,button_height])
 
         # Render text onto screen
         # screen.blit(quit , (width/2+50,height/2))
         screen.blit(question_text, (width/2 - 150, height/2 - 150))
-        for i in range(0, 3):
+        for i in range(0, 4):
             screen.blit(texts[i], choice_coordinates[i])
         
         # updates the frames of the game
