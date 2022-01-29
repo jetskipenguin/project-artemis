@@ -3,6 +3,45 @@ import pygame
 import sys
 import webbrowser
 
+def start_screen(display, clock):
+
+    # Instructions
+    instructions = ['Dodge Asteroids and Navigate to NASA', 'Equipment to Answer Questions and Earn Points!']
+    prompt = 'Click anywhere to start!'
+
+    # Font and Colors
+    color = (255, 255, 255)
+    font = 'Corbel'
+    smallfont = pygame.font.SysFont(font, 32)
+
+    # Render Texts
+    instruction_texts = [smallfont.render(instructions[0], True, color), smallfont.render(instructions[1], True, color)]
+    prompt_text = smallfont.render(prompt, True, color)
+
+    # Text Coordinates
+    width = display.get_width()
+    height = display.get_height()
+    instruction_coords = [(width/2 - 250, height/2 - 150), (width/2 - 250, height/2 - 100)]
+    prompt_coords = (width/2 - 200, height/2)
+
+    # Start screen
+    while True:
+        display.fill((24,164,86))
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                return 0
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        for i in range(0, len(instruction_texts)):
+            display.blit(instruction_texts[i], instruction_coords[i])
+        display.blit(prompt_text, prompt_coords)
+        
+        clock.tick(60)
+        pygame.display.update()
+    
 def start_game():
 
     # Init Stuff
@@ -10,6 +49,8 @@ def start_game():
     display = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
     player = Player(400, 300, 32, 32)
+
+    start_screen(display, clock)
 
     # Start game loop
     while True:
