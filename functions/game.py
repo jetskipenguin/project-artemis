@@ -1,10 +1,10 @@
-from .models import Player
+from .models import Bird, Highscore_Counter, Meteriods, Question_Object
 import pygame
 import sys
 import webbrowser
+import random
 
 def start_screen(display, clock):
-
     # Instructions
     instructions = ['Dodge Asteroids and Navigate to NASA', 'Equipment to Answer Questions and Earn Points!']
     prompt = 'Click anywhere to start!'
@@ -48,14 +48,25 @@ def start_game():
     pygame.init()
     display = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
-    player = Player(400, 300, 32, 32)
 
     start_screen(display, clock)
 
+    width = display.get_width()
+    height = display.get_height()
+
+    # Initialize Objects
+    player = Bird(display)
+    counter = Highscore_Counter(width/2 - 100, height/2 - 300, 3)
+    rock1 = Meteriods(display) # create a rock
+    rock2 = Meteriods(display)
+    rock3 = Meteriods(display)
+    eva = Question_Object(display, 'EVA') #create an EVA instance
+
+    curr_question = random.randint(0, 6)
+
     # Start game loop
     while True:
-        display.fill((24,164,86))
-
+        display.fill((0,0,0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -63,10 +74,39 @@ def start_game():
 
         pygame.draw.rect(display, (255,255,255), (player.x, player.y, 16, 16))
 
-        player.move(pygame.key.get_pressed())
+        player.handle_keys()
+        counter.draw(display)
+
+        if curr_question == 1:
+            eva.draw(display)
+
+        if player.rect.colliderect(eva.rect) and curr_question == 1:
+            print("Bird hit EVA")
+            ans_choices = ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
+            question('Question Text Here Test Here Test Here Test Here Test Here', ans_choices, 'Choice 1', weblink='test.com')
+            curr_question += 1
+    
+        # if player.rect.colliderect(rock1.rect):
+        #     print("bird = ", player.rect)
+        #     print("rock is ", rock1.rect)
+        #     print("Bird hit rock1")
+        # if player.rect.colliderect(rock2.rect):
+        #     print("Bird hit rock2")
+        # if player.rect.colliderect(rock3.rect):
+        #     print("Bird hit rock3")
+        
+
+        player.draw(display)
+        rock1.draw(display)
+        rock2.draw(display)
+        rock3.draw(display)
+        
+        # TODO: if player hits asteroid, decrement
 
         clock.tick(60)
         pygame.display.update()
+
+    # TODO: Return 0 if player loses
 
 # returns pygame font object in correct size depending on character count
 def resizeFont(user_input, font):
