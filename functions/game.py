@@ -17,8 +17,6 @@ def start_game():
     while True:
         display.fill((24,164,86))
 
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -30,18 +28,13 @@ def start_game():
 
         if keys[pygame.K_a]:
             player.x -= 5
-
         if keys[pygame.K_d]:
             player.x += 5
-
         if keys[pygame.K_w]:
             player.y += 5
-
         if keys[pygame.K_s]:
             player.y -= 5
 
-
-        player.main(display)
 
         clock.tick(60)
         pygame.display.update()
