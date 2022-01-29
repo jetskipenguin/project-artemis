@@ -16,3 +16,10 @@ class Player:
             self.y -= 5
         if keys[pygame.K_s]:
             self.y += 5
+
+class Asteroid:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
