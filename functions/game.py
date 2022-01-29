@@ -6,11 +6,12 @@ import random
 
 def start_game():
 
+    # Init Stuff
     pygame.init()
-
     display = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
     player = Player(400, 300, 32, 32)
+
 
     # Start game loop
     while True:
@@ -71,10 +72,9 @@ def question(question: str, choices):
     
     # Text
     question_text = smallfont.render(question, True, color)
-    choice1_text = smallfont.render(choices[0], True, color)
-    choice2_text = smallfont.render(choices[1], True, color)
-    choice3_text = smallfont.render(choices[2], True, color)
-    choice4_text = smallfont.render(choices[3], True, color)
+    texts = []
+    for i in range(0, 4):
+        texts.append(smallfont.render(choices[0], True, color))
 
     # Stores positions of buttons and text
     choice_coordinates = [(width/2 - 250, height/2 - 50), (width/2 + 100, height/2 - 50), (width/2 - 250, height/2 + 50), (width/2 + 100, height/2 + 50)]
@@ -111,10 +111,8 @@ def question(question: str, choices):
         # Render text onto screen
         # screen.blit(quit , (width/2+50,height/2))
         screen.blit(question_text, (width/2 - 150, height/2 - 150))
-        screen.blit(choice1_text, choice_coordinates[0])
-        screen.blit(choice2_text, choice_coordinates[1])
-        screen.blit(choice3_text, choice_coordinates[2])
-        screen.blit(choice4_text, choice_coordinates[3])
+        for i in range(0, 3):
+            screen.blit(texts[i], choice_coordinates[i])
         
         # updates the frames of the game
         pygame.display.update()
