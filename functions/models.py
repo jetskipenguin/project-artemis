@@ -30,7 +30,5 @@ class Player:
         # else:
         #     display.blit(pygame.transform.scale(player_walk_images[0], (32, 42)), (self.x, self.y))
 
-        self.handle_weapons(display)
-
         self.moving_right = False
         self.moving_left = False
