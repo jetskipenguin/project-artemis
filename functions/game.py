@@ -1,6 +1,7 @@
 from .models import Player
 import pygame
 import sys
+import webbrowser
 
 def start_game():
 
@@ -27,7 +28,7 @@ def start_game():
         pygame.display.update()
 
 # display question and answer choices
-def question(question: str, choices, correct_choice):
+def question(question: str, choices, correct_choice, weblink=None):
     pygame.init()
 
     # Screen Resolution
@@ -65,6 +66,14 @@ def question(question: str, choices, correct_choice):
     button_width = 225
     button_height = 75
     
+    # Weblink Stuff
+    weblink_text = smallfont.render('Hint', True, color)
+    weblink_width = 100
+    weblink_height = 100
+    weblink_color = (230, 65, 65)
+    weblink_hover_color = (239, 102, 102)
+    weblink_coords = (width/2 , height/2 + 150)
+
     while True:
         for ev in pygame.event.get():
             
@@ -81,6 +90,10 @@ def question(question: str, choices, correct_choice):
                         else:
                             question_text = smallfont.render('Incorrect!', True, color)
                             return False
+                    
+            if ev.type == pygame.MOUSEBUTTONDOWN:
+                if weblink_coords[0] <= mouse[0] <= weblink_coords[0] + weblink_width and weblink_coords[1] <= mouse[1] <= weblink_coords[1] + weblink_height:        
+                    webbrowser.open(weblink)
 
         # fills the screen with a color
         screen.fill(background_color)
@@ -97,10 +110,18 @@ def question(question: str, choices, correct_choice):
                 # If mouse not hovering over button
                 pygame.draw.rect(screen,color_dark,[choice_coordinates[i][0], choice_coordinates[i][1],button_width,button_height])
 
+        # Draw rectangle for hint
+        if weblink_coords[0] <= mouse[0] <= weblink_coords[0] + weblink_width and weblink_coords[1] <= mouse[1] <= weblink_coords[1] + weblink_height:
+            pygame.draw.rect(screen, weblink_hover_color, [weblink_coords[0], weblink_coords[1], weblink_width, weblink_height])
+        else:
+            pygame.draw.rect(screen, weblink_color, [weblink_coords[0], weblink_coords[1], weblink_width, weblink_height])
+
         # Render text onto screen
         screen.blit(question_text, question_coord)
         for i in range(0, 4):
             screen.blit(texts[i], choice_coordinates[i])
+            if weblink:
+                screen.blit(weblink_text, weblink_coords)
         
         # updates the frames of the game
         pygame.display.update()
