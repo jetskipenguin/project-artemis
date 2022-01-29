@@ -1,9 +1,6 @@
 from .models import Player
 import pygame
 import sys
-import math
-import random
-
 
 def start_game():
 
@@ -22,34 +19,30 @@ def start_game():
                 pygame.quit()
                 sys.exit()
 
-        keys = pygame.key.get_pressed()
-
         pygame.draw.rect(display, (255,255,255), (player.x, player.y, 16, 16))
 
-        if keys[pygame.K_a]:
-            player.x -= 5
-        if keys[pygame.K_d]:
-            player.x += 5
-        if keys[pygame.K_w]:
-            player.y += 5
-        if keys[pygame.K_s]:
-            player.y -= 5
+        player.move(pygame.key.get_pressed())
 
         clock.tick(60)
         pygame.display.update()
 
 # display question and answer choices
-def question(question: str, choices):
+def question(question: str, choices, correct_choice):
     pygame.init()
 
     # Screen Resolution
     res = (720,720)
     screen = pygame.display.set_mode(res)
 
-    # Colors
-    color = (255,255,255)
-    hover_color = (255, 0, 0)
-    color_dark = (0, 255, 0)
+    #### Colors
+    # Text Color
+    color = (255, 255, 255)
+    # Hover Color
+    hover_color = (108, 184, 216)
+    # Button Color
+    color_dark = (19, 149, 205)
+    # Background Color
+    background_color = (0,0,0)
 
     # Fonts
     smallfont = pygame.font.SysFont('Corbel',35)
@@ -66,6 +59,7 @@ def question(question: str, choices):
 
     # Stores positions of buttons and text
     choice_coordinates = [(width/2 - 250, height/2 - 50), (width/2 + 100, height/2 - 50), (width/2 - 250, height/2 + 50), (width/2 + 100, height/2 + 50)]
+    question_coord = (width/2 - 150, height/2 - 150)
 
     # Stores Height and Width of Answer Buttons
     button_width = 225
@@ -78,12 +72,18 @@ def question(question: str, choices):
                 pygame.quit()
                 
             # checks if a mouse is clicked
-            if ev.type == pygame.MOUSEBUTTONDOWN:
-                if choice_coordinates[0][0] <= mouse[0] <= choice_coordinates[0][0] + button_width and choice_coordinates[0][1] <= mouse[1] <= choice_coordinates[0][1] + button_height:
-                    pass
-                    
+            for i in range(0, 4):
+                if ev.type == pygame.MOUSEBUTTONDOWN:
+                    if choice_coordinates[i][0] <= mouse[0] <= choice_coordinates[i][0] + button_width and choice_coordinates[i][1] <= mouse[1] <= choice_coordinates[i][1] + button_height:
+                        if choices[i] == correct_choice:
+                            question_text = smallfont.render('Correct!', True, color)
+                            return True
+                        else:
+                            question_text = smallfont.render('Incorrect!', True, color)
+                            return False
+
         # fills the screen with a color
-        screen.fill((60,25,60))
+        screen.fill(background_color)
 
         # stores the (x,y) coordinates into the variable as a tuple
         mouse = pygame.mouse.get_pos()
@@ -98,8 +98,7 @@ def question(question: str, choices):
                 pygame.draw.rect(screen,color_dark,[choice_coordinates[i][0], choice_coordinates[i][1],button_width,button_height])
 
         # Render text onto screen
-        # screen.blit(quit , (width/2+50,height/2))
-        screen.blit(question_text, (width/2 - 150, height/2 - 150))
+        screen.blit(question_text, question_coord)
         for i in range(0, 4):
             screen.blit(texts[i], choice_coordinates[i])
         
