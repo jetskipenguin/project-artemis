@@ -1,5 +1,6 @@
 import pygame
 import random
+from .getData import getData
 
 class Bird(object):  # represents the bird, not the game
     def __init__(self, display):
@@ -48,8 +49,8 @@ class Meteriods(object):  # represents the bird, not the game
         self.x = x  #need to update this to start
         self.y = y
         self.rect = self.rock.get_rect()
-        self.rect.x = 0
-        self.rect.y = 0
+        self.rect.x = x
+        self.rect.y = y
 
     def draw(self, surface):
         # random movement of rock
@@ -68,27 +69,34 @@ class Meteriods(object):  # represents the bird, not the game
             self.x = random.randint(0,self.width)
             self.y = 0
             self.rect.y = 0
+
         surface.blit(self.rock, (self.x, self.y))
         #print(self.rect)
 
 class Question_Object(object): # type questions
-    def __init__(self, display, type=None):
+    def __init__(self, display, type):
         if type == "EVA":
             self.type = pygame.image.load("sprites/EVA Suit.png")
+            self.questions, self.answers, self.links = getData('csv/EVA Suit.csv')
         elif type == "HLS":
             self.type = pygame.image.load('sprites/HLS Starship.png')
+            self.questions, self.answers, self.links = getData('csv/HLS Starship.csv')
         elif type == "Lunar Base":
             self.type = pygame.image.load('sprites/Lunar Base.png')
+            self.questions, self.answers, self.links = getData('csv/Artemis Base Camp.csv')
         elif type == 'Lunar Gateway':
             self.type = pygame.image.load('sprites/Lunar Gateway.png')
+            self.questions, self.answers, self.links = getData('csv/Lunar Gateway.csv')
         elif type == 'Orion':
             self.type = pygame.image.load("sprites/Orion Capsule.png")
+            self.questions, self.answers, self.links = getData('csv/Orion.csv')
         elif type == 'Artemis':
             self.type = pygame.image.load("sprites/window_icon.png")
-        elif type == 'Moon':
-            self.type = pygame.image.load("sprites/moon.png")
+            self.questions, self.answers, self.links = getData('csv/Artemis.csv')
         else:
-            self.type = pygame.image.load("sprites/ship1.png")
+            self.type = pygame.image.load("sprites/moon.png")
+            self.questions, self.answers, self.links = getData('csv/Moon.csv')
+
         self.type = pygame.transform.scale(self.type,(75,75))
 
         # screen width

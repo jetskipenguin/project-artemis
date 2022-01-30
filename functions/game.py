@@ -1,4 +1,5 @@
 from .models import Bird, Highscore_Counter, Meteriods, Question_Object
+from .getData import getData
 import pygame
 import sys
 import webbrowser
@@ -43,7 +44,7 @@ def start_screen(display, clock):
         pygame.display.update()
     
 def start_game():
-
+    
     # Init Stuff
     pygame.init()
     display = pygame.display.set_mode((800, 600))
@@ -57,12 +58,22 @@ def start_game():
     # Initialize Objects
     player = Bird(display)
     counter = Highscore_Counter(width/2 - 100, height/2 - 300, 3)
-    rock1 = Meteriods(display) # create a rock
-    rock2 = Meteriods(display)
-    rock3 = Meteriods(display)
-    eva = Question_Object(display, 'EVA') #create an EVA instance
 
-    curr_question = random.randint(0, 6)
+    rocks = []
+    for i in range(0, 3):
+        rocks.append(Meteriods(display))
+
+    # Create instance of each question type
+    eva = Question_Object(display, 'EVA')
+    hls = Question_Object(display, 'HLS')
+    lunar_base = Question_Object(display, 'Lunar Base')
+    lunar_gateway = Question_Object(display, 'Lunar Gateway')
+    orion_capsule = Question_Object(display, 'Orion')
+    artemis = Question_Object(display, 'Artemis')
+    moon = Question_Object(display, 'Moon')
+    objects = [eva, hls, lunar_base, lunar_gateway, orion_capsule, artemis, moon]
+
+    curr_category = random.randint(0, 6)
 
     # Start game loop
     while True:
@@ -72,34 +83,41 @@ def start_game():
                 pygame.quit()
                 sys.exit()
 
-        pygame.draw.rect(display, (255,255,255), (player.x, player.y, 16, 16))
-
         player.handle_keys()
         counter.draw(display)
 
-        if curr_question == 1:
+        if curr_category == 0:
             eva.draw(display)
+        elif curr_category == 1:
+            hls.draw(display)
+        elif curr_category == 2:
+            lunar_base.draw(display)
+        elif curr_category == 3:
+            lunar_gateway.draw(display)
+        elif curr_category == 4:
+            orion_capsule.draw(display)
+        elif curr_category == 5:
+            artemis.draw(display)
+        else:
+            moon.draw(display)
 
-        if player.rect.colliderect(eva.rect) and curr_question == 1:
-            print("Bird hit EVA")
-            ans_choices = ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
-            question('Question Text Here Test Here Test Here Test Here Test Here', ans_choices, 'Choice 1', weblink='test.com')
-            curr_question += 1
-    
-        # if player.rect.colliderect(rock1.rect):
-        #     print("bird = ", player.rect)
-        #     print("rock is ", rock1.rect)
-        #     print("Bird hit rock1")
-        # if player.rect.colliderect(rock2.rect):
-        #     print("Bird hit rock2")
-        # if player.rect.colliderect(rock3.rect):
-        #     print("Bird hit rock3")
-        
+        for i in objects:
+            if player.rect.colliderect(i.rect):
+                print("Collided with {}".format(i))
+                seed = random.randint(1, len(i.questions)-1)
+                if i.links:
+                    question(i.questions[seed], i.answers[seed], i.answers[seed][0], i.links[0])
+                else:
+                    question(i.questions[seed], i.answers[seed], i.answers[seed][0])
+                curr_category = random.randint(0, 6)
+
+        for i in rocks:
+            if player.rect.colliderect(i.rect):
+                print("Player collided with a rock!")
 
         player.draw(display)
-        rock1.draw(display)
-        rock2.draw(display)
-        rock3.draw(display)
+        for i in rocks:
+            i.draw(display)
         
         # TODO: if player hits asteroid, decrement
 
