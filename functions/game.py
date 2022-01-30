@@ -147,7 +147,7 @@ def resizeFont(user_input, font):
     if len(user_input) > 50:
         return pygame.font.SysFont(font, 22)
     elif len(user_input) > 40:
-        return pygame.font.SysFont(font, 26)
+        return pygame.font.SysFont(font, 28)
     elif len(user_input) > 30:
         return pygame.font.SysFont(font, 30)
     elif len(user_input) > 20:
