@@ -32,6 +32,7 @@ def start_screen(display, clock):
     while True:
         display.fill((0,0,0))
         display.blit(background, [0,0])
+        pygame.display.set_caption('D.I.A.N.A | Dodging In-game Asteroids Near Artemis')
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
