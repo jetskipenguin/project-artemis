@@ -4,6 +4,7 @@ import sys
 import webbrowser
 import random
 from copy import deepcopy
+from pygame import mixer
 
 def start_screen(display, clock):
     # Instructions
@@ -65,6 +66,9 @@ def create_new_object(display, curr_category):
 def start_game():
     # Init Stuff
     pygame.init()
+    mixer.init()
+    mixer.music.load( 'sounds/stars.wav' )
+    mixer.music.play( -1, 0.0 )
     display = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
 
@@ -154,9 +158,9 @@ def resizeFont(user_input, font):
 # display question and answer choices
 def question(question: str, choices, correct_choice, weblink=None):
     pygame.init()
-
+    
     # set window icon
-    icon = pygame.image.load('sprites\\window_icon.png')
+    icon = pygame.image.load('sprites/window_icon.png')
     pygame.display.set_icon(icon)
 
     # Screen Resolution
