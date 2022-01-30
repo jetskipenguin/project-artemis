@@ -1,7 +1,9 @@
-from .models import Bird, Highscore_Counter, Meteriods, EVA
+from .models import Bird, Highscore_Counter, Meteriods, Question_Object, Life_Counter
 import pygame
 import sys
 import webbrowser
+import random
+from copy import deepcopy
 
 def start_screen(display, clock):
     # Instructions
@@ -23,9 +25,12 @@ def start_screen(display, clock):
     instruction_coords = [(width/2 - 250, height/2 - 150), (width/2 - 250, height/2 - 100)]
     prompt_coords = (width/2 - 200, height/2)
 
+    background = pygame.image.load('sprites/background.jpg')
+
     # Start screen
     while True:
-        display.fill((24,164,86))
+        display.fill((0,0,0))
+        display.blit(background, [0,0])
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -40,9 +45,24 @@ def start_screen(display, clock):
         
         clock.tick(60)
         pygame.display.update()
-    
-def start_game():
 
+def create_new_object(display, curr_category):
+    if curr_category == 0:
+        return Question_Object(display, 'EVA')
+    elif curr_category == 1:
+        return Question_Object(display, 'HLS')
+    elif curr_category == 2:
+        return Question_Object(display, 'Lunar Base')
+    elif curr_category == 3:
+        return Question_Object(display, 'Lunar Gateway')
+    elif curr_category == 4:
+        return Question_Object(display, 'Orion')
+    elif curr_category == 5:
+        return Question_Object(display, 'Artemis')
+    else:
+        return Question_Object(display, 'Moon')
+
+def start_game():
     # Init Stuff
     pygame.init()
     display = pygame.display.set_mode((800, 600))
@@ -55,61 +75,81 @@ def start_game():
 
     # Initialize Objects
     player = Bird(display)
-    counter = Highscore_Counter(width/2 - 100, height/2 - 300, 3)
-    rock1 = Meteriods(display) # create a rock
-    rock2 = Meteriods(display)
-    rock3 = Meteriods(display)
-    eva = EVA(display) #create an EVA instance
 
-    curr_question = 1
+    score = Highscore_Counter(width/2 + 100, height/2 - 300, 0)
+    life_counter = Life_Counter(width/2 - 100, height/2 - 300, 300)
+
+    rocks = []
+    for i in range(0, 3):
+        rocks.append(Meteriods(display))
+
+    # Create instance of each question type
+    # objects = [eva, hls, lunar_base, lunar_gateway, orion_capsule, artemis, moon]
+    curr_category = random.randint(0, 6)
+    object = create_new_object(display, curr_category)
+    
+    background = pygame.image.load('sprites/background.jpg')
 
     # Start game loop
     while True:
+        pygame.display.set_caption('D.I.A.N.A | Dodging In-game Asteroids Near Artemis')
         display.fill((0,0,0))
-
+        display.blit(background, [0, 0])
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-        pygame.draw.rect(display, (255,255,255), (player.x, player.y, 16, 16))
-
         player.handle_keys()
-        counter.draw(display)
+        life_counter.draw(display)
+        score.draw(display)
+        object.draw(display)
 
-        if curr_question == 1:
-            eva.draw(display)
+        if player.rect.colliderect(object.rect):
+            print("Collided with {}".format(object))
+            seed = random.randint(1, len(object.questions)-1)
+            q = False
 
-        if player.rect.colliderect(rock1.rect):
-            print("bird = ", player.rect)
-            print("rock is ", rock1.rect)
-            print("Bird hit rock1")
-        if player.rect.colliderect(rock2.rect):
-            print("Bird hit rock2")
-        if player.rect.colliderect(rock3.rect):
-            print("Bird hit rock3")
-        if player.rect.colliderect(eva.rect) and curr_question == 1:
-            print("Bird hit EVA")
-            question = 1
+            new_list = deepcopy(object.answers[seed])
+            random.shuffle(object.answers[seed])
+            
+            q = question(object.questions[seed], object.answers[seed], new_list[0], object.links)
+            print(object.type)
+            
+            curr_category = random.randint(0, 6)
+            object = create_new_object(display, curr_category)
+
+            if q == True:
+                score.increment()
+
+        for i in rocks:
+            if player.rect.colliderect(i.rect):
+                life_counter.decrement()
 
         player.draw(display)
-        rock1.draw(display)
-        rock2.draw(display)
-        rock3.draw(display)
+        for i in rocks:
+            i.draw(display)
         
-        # TODO: if player hits asteroid, decrement
+        if life_counter.count < 0:
+            return 0
 
         clock.tick(60)
         pygame.display.update()
 
-    # TODO: Return 0 if player loses
-
 # returns pygame font object in correct size depending on character count
 def resizeFont(user_input, font):
-    if len(user_input) > 10:
-        return pygame.font.SysFont(font, 20)
+    if len(user_input) > 60:
+        return pygame.font.SysFont(font, 18)
+    if len(user_input) > 50:
+        return pygame.font.SysFont(font, 22)
+    elif len(user_input) > 40:
+        return pygame.font.SysFont(font, 26)
+    elif len(user_input) > 30:
+        return pygame.font.SysFont(font, 30)
+    elif len(user_input) > 20:
+        return pygame.font.SysFont(font, 36)
     else:
-        return pygame.font.SysFont(font, 32)
+        return pygame.font.SysFont(font, 38)
 
 # display question and answer choices
 def question(question: str, choices, correct_choice, weblink=None):
@@ -120,7 +160,7 @@ def question(question: str, choices, correct_choice, weblink=None):
     pygame.display.set_icon(icon)
 
     # Screen Resolution
-    res = (720,720)
+    res = (720,520)
     screen = pygame.display.set_mode(res)
     pygame.display.set_caption('Question')
     
@@ -148,6 +188,7 @@ def question(question: str, choices, correct_choice, weblink=None):
     question_text = new_font.render(question, True, color)
     texts = []
     for i in range(0, 4):
+        print(choices)
         new_font = resizeFont(choices[i], font)
         texts.append(new_font.render(choices[i], True, color))
 
@@ -166,6 +207,22 @@ def question(question: str, choices, correct_choice, weblink=None):
     weblink_color = (230, 65, 65)
     weblink_hover_color = (239, 102, 102)
     weblink_coords = (width/2 , height/2 + 150)
+
+    # Stores positions of buttons and text
+    choice_coordinates = [(20, 91), (20, 174), (20, 257), (20, 340)]
+    question_coord = (20, 8)
+
+    # Stores Height and Width of Answer Buttons
+    button_width = 680
+    button_height = 75
+
+    # Weblink Stuff
+    weblink_text = smallfont.render('Hint', True, color)
+    weblink_width = 680
+    weblink_height = 75
+    weblink_color = (230, 65, 65)
+    weblink_hover_color = (239, 102, 102)
+    weblink_coords = (20 , 423)
 
     while True:
         for ev in pygame.event.get():

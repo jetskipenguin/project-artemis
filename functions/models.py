@@ -1,5 +1,6 @@
 import pygame
 import random
+from .getData import getData
 
 class Bird(object):  # represents the bird, not the game
     def __init__(self, display):
@@ -31,7 +32,7 @@ class Bird(object):  # represents the bird, not the game
         elif key[pygame.K_LEFT] or key[pygame.K_a]:
             self.x -= dist
             self.rect.x -= dist
-    
+
     def draw(self, surface):
         surface.blit(self.bird, (self.x, self.y))
 
@@ -48,8 +49,8 @@ class Meteriods(object):  # represents the bird, not the game
         self.x = x  #need to update this to start
         self.y = y
         self.rect = self.rock.get_rect()
-        self.rect.x = 0
-        self.rect.y = 0
+        self.rect.x = x
+        self.rect.y = y
 
     def draw(self, surface):
         # random movement of rock
@@ -68,54 +69,53 @@ class Meteriods(object):  # represents the bird, not the game
             self.x = random.randint(0,self.width)
             self.y = 0
             self.rect.y = 0
-        surface.blit(self.rock, (self.x, self.y))
-        #print(self.rect)
 
-class EVA(object): # EVA questions
-    def __init__(self, display):
-        """ The constructor of the class """
-        self.EVA = pygame.image.load("sprites/EVA Suit.png")
-        self.EVA = pygame.transform.scale(self.EVA,(75,75))
+        surface.blit(self.rock, (self.x, self.y))
+
+class Question_Object(object): # type questions
+    def __init__(self, display, type):
+        if type == "EVA":
+            self.type = pygame.image.load("sprites/EVA Suit.png")
+            self.questions, self.answers, self.links = getData('csv/EVA Suit.csv')
+        elif type == "HLS":
+            self.type = pygame.image.load('sprites/HLS Starship.png')
+            self.questions, self.answers, self.links = getData('csv/HLS Starship.csv')
+        elif type == "Lunar Base":
+            self.type = pygame.image.load('sprites/Lunar Base.png')
+            self.questions, self.answers, self.links = getData('csv/Artemis Base Camp.csv')
+        elif type == 'Lunar Gateway':
+            self.type = pygame.image.load('sprites/Lunar Gateway.png')
+            self.questions, self.answers, self.links = getData('csv/Lunar Gateway.csv')
+        elif type == 'Orion':
+            self.type = pygame.image.load("sprites/Orion Capsule.png")
+            self.questions, self.answers, self.links = getData('csv/Orion.csv')
+        elif type == 'Artemis':
+            self.type = pygame.image.load("sprites/window_icon.png")
+            self.questions, self.answers, self.links = getData('csv/Artemis.csv')
+        else:
+            self.type = pygame.image.load("sprites/moon.png")
+            self.questions, self.answers, self.links = getData('csv/Moon.csv')
+
+        self.type = pygame.transform.scale(self.type,(75,75))
 
         # screen width
         self.width = display.get_width()
         self.height = display.get_height()
 
-        # the EVA position
-        x = random.randint(0,self.width)
-        y = random.randint(0,self.height)
-        self.x = x  #need to update this to start
-        self.y = y
-        self.rect = self.EVA.get_rect()
+        # the type position
+        self.x = random.randint(50,self.width - 50)
+        self.y = random.randint(50,self.height - 50)
+        self.rect = self.type.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
 
     def draw(self, surface):
-        """ Draw on surface """
         # blit yourself at your current position
-        surface.blit(self.EVA, (self.x, self.y))
+        surface.blit(self.type, (self.x, self.y))
 
-'''def paused():
-    largeText = pygame.font.SysFont("comicsansms", 115)
-    TextSurf, TextRect = text_objects("Paused", largeText)
-    TextRect.center = ((display_width / 2), (display_height / 2))
-    gameDisplay.blit(TextSurf, TextRect)
-
-    while pause:
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-        # gameDisplay.fill(white)
-
-        button("Continue", 150, 450, 100, 50, green, bright_green, unpause)
-        button("Quit", 550, 450, 100, 50, red, bright_red, quitgame)
-
-        pygame.display.update()
-        clock.tick(15)
-'''
+    def stop(self):
+        self.x = -10000
+        self.y = -10000
 
 class Highscore_Counter:
     def __init__(self, x, y, count):
@@ -125,12 +125,28 @@ class Highscore_Counter:
         
         # Set Fonts and Colors
         self.font = pygame.font.SysFont('Corbel', 32)
-        self.text = self.font.render('Highscore {}'.format(self.count) , True, (255,255,255))
+        self.text = self.font.render('Score {}'.format(self.count) , True, (255,255,255))
+
+    def increment(self):
+        self.count += 100
+        self.text = self.font.render('Score {}'.format(self.count) , True, (255,255,255))
+
+    def draw(self, display):
+        display.blit(self.text, (self.x, self.y))
+
+class Life_Counter:
+    def __init__(self, x, y, count):
+        self.x = x
+        self.y = y
+        self.count = count
+        
+        # Set Fonts and Colors
+        self.font = pygame.font.SysFont('Corbel', 32)
+        self.text = self.font.render('Health: {}'.format(self.count) , True, (255,255,255))
 
     def decrement(self):
-        print("AHHHHH")
         self.count -= 1
-        self.text = self.font.render('Highscore {}'.format(self.count) , True, (255,255,255))
+        self.text = self.font.render('Health: {}'.format(self.count) , True, (255,255,255))
 
     def draw(self, display):
         display.blit(self.text, (self.x, self.y))
