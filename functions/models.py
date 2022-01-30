@@ -48,9 +48,10 @@ class Meteriods(object):  # represents the bird, not the game
         y = random.randint(0,self.height)
         self.x = x  #need to update this to start
         self.y = y
-        self.rect = self.rock.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect = self.rock.get_rect(topleft=(25,25),width=35, height=35)
+        self.color = (255,0,0)
+        self.rect.x = self.x + 50
+        self.rect.y = self.y - 50
 
     def draw(self, surface):
         # random movement of rock
@@ -59,8 +60,8 @@ class Meteriods(object):  # represents the bird, not the game
 
         self.x += x
         self.y += y
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = self.x + 75
+        self.rect.y = self.y + 45
         if self.x > self.width:  #screen wrap
             self.x = random.randint(0,self.width)
             self.y = 0
@@ -69,7 +70,10 @@ class Meteriods(object):  # represents the bird, not the game
             self.x = random.randint(0,self.width)
             self.y = 0
             self.rect.y = 0
-
+        
+        # Draws Collider Boxes
+        #pygame.draw.rect(surface, self.color, self.rect)
+        # Draw Image
         surface.blit(self.rock, (self.x, self.y))
 
 class Question_Object(object): # type questions
