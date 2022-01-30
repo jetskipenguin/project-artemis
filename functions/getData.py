@@ -20,6 +20,8 @@ def getData( name ):
             questions.append( q )
             tmp = [ a, w1, w2, w3 ]
             answers.append( tmp )
+
+    print(link)
     return questions, answers, link
 
 # Function that grabs question from questions list and keeps track of what it has seen.

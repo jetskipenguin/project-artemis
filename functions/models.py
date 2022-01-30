@@ -71,7 +71,6 @@ class Meteriods(object):  # represents the bird, not the game
             self.rect.y = 0
 
         surface.blit(self.rock, (self.x, self.y))
-        #print(self.rect)
 
 class Question_Object(object): # type questions
     def __init__(self, display, type):
@@ -104,10 +103,8 @@ class Question_Object(object): # type questions
         self.height = display.get_height()
 
         # the type position
-        x = random.randint(0,self.width)
-        y = random.randint(0,self.height)
-        self.x = x  #need to update this to start
-        self.y = y
+        self.x = random.randint(50,self.width - 50)
+        self.y = random.randint(50,self.height - 50)
         self.rect = self.type.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
@@ -115,6 +112,10 @@ class Question_Object(object): # type questions
     def draw(self, surface):
         # blit yourself at your current position
         surface.blit(self.type, (self.x, self.y))
+
+    def stop(self):
+        self.x = -10000
+        self.y = -10000
 
 class Highscore_Counter:
     def __init__(self, x, y, count):
@@ -124,12 +125,28 @@ class Highscore_Counter:
         
         # Set Fonts and Colors
         self.font = pygame.font.SysFont('Corbel', 32)
-        self.text = self.font.render('Highscore {}'.format(self.count) , True, (255,255,255))
+        self.text = self.font.render('Score {}'.format(self.count) , True, (255,255,255))
+
+    def increment(self):
+        self.count += 100
+        self.text = self.font.render('Score {}'.format(self.count) , True, (255,255,255))
+
+    def draw(self, display):
+        display.blit(self.text, (self.x, self.y))
+
+class Life_Counter:
+    def __init__(self, x, y, count):
+        self.x = x
+        self.y = y
+        self.count = count
+        
+        # Set Fonts and Colors
+        self.font = pygame.font.SysFont('Corbel', 32)
+        self.text = self.font.render('Health: {}'.format(self.count) , True, (255,255,255))
 
     def decrement(self):
-        print("AHHHHH")
         self.count -= 1
-        self.text = self.font.render('Highscore {}'.format(self.count) , True, (255,255,255))
+        self.text = self.font.render('Health: {}'.format(self.count) , True, (255,255,255))
 
     def draw(self, display):
         display.blit(self.text, (self.x, self.y))
