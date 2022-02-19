@@ -5,6 +5,7 @@ import webbrowser
 import random
 from copy import deepcopy
 from pygame import mixer
+import os
 
 def start_screen(display, clock):
     # Instructions
@@ -68,7 +69,7 @@ def start_game():
     # Init Stuff
     pygame.init()
     mixer.init()
-    mixer.music.load( 'sounds/stars.wav' )
+    mixer.music.load( os.getcwd() + '/sounds/stars.wav' )
     mixer.music.play( -1, 0.0 )
     display = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
